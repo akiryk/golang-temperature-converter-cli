@@ -16,6 +16,7 @@ var err error
 
 var errInvalidArguments = errors.New("Invalid arguments")
 var errReadingInput = errors.New("Error reading input")
+var errReadingShouldConvertAgain = errors.New("Error trying to see yes or no")
 
 func main() {
 	if len(os.Args) != 2 {
@@ -26,10 +27,23 @@ func main() {
 
 	for {
 		fmt.Print("What is the current temperature in " + originUnit + " ? ")
+		_, err = fmt.Scanln(&originValue)
+		if err != nil {
+			printError(errReadingInput)
+		}
+
+		if originUnit == "C" {
+			convertToFahrenheit(originValue)
+		} else {
+			convertToCelsius(originValue)
+		}
 
 		fmt.Print("Would you like to convert another temperature ? (y/n) ")
-
-		if shouldConvertAgain != "Y" {
+		_, err = fmt.Scanln(&shouldConvertAgain)
+		if err != nil {
+			printError(errReadingShouldConvertAgain)
+		}
+		if strings.ToUpper(strings.TrimSpace(shouldConvertAgain)) != "Y" {
 			fmt.Println("Good bye!")
 			break
 		}
